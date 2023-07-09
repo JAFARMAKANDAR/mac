@@ -2,10 +2,11 @@ from django.shortcuts import render
 from .models import Product, Contact, Orders, Orderupdate
 from math import ceil
 import json
-
+from django.views.decorators.csrf import csrf_exempt
+from payTm import checksum
 # Create your views here.
 from django.http import HttpResponse
-
+MERCHANT_KEY = '';
 
 def index(request):
     #products = Product.objects.all()
@@ -88,5 +89,34 @@ def checkout(request):
         update.save()
         thank = True
         id = order.order_id
-        return render(request, 'shop/checkout.html', {'thank': thank, 'id': id})
+        #return render(request, 'shop/checkout.html', {'thank': thank, 'id': id})
+        #request paytm to transfer the amount to your account after payment by user
+        param_dict = {
+
+            'MID': '',
+            'ORDER_ID': 'order.order_id',
+            'TXN_AMOUNT': '1',
+            'CUST_ID': 'email',
+            'INDUSTRY_TYPE_ID': 'Retail',
+            'WEBSITE': 'WEBSTAGING',
+            'CHANNEL_ID': 'WEB',
+            # 'CALLBACK_URL':'http://127.0.0.1:8000/shop/handlerequest/',
+        }
+        param_dict['CHECKSUMHASH'] = checksum.generaye_checksum(param_dict, MERCHANT_KEY)
+        return render(request, 'shop/paytm.html', {'param_dict': param_dict})
     return render(request, 'shop/checkout.html')
+@csrf_exempt
+def handlerequest(request):
+    #paytm will send you post request here
+    form = request.POST
+    response_dict = {}
+    for i in form.keys():
+        checksum = form[i]
+
+    verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
+    if verify:
+        if response_dict['RESPCODE'] == '01':
+            print('order successful')
+        else:
+            print('order was not successful because' + response_dict['RESPMSG'])
+    return render(request, 'shop/paymentstatus.html', {'response': response_dict})
