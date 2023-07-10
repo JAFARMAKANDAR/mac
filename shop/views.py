@@ -3,7 +3,7 @@ from .models import Product, Contact, Orders, Orderupdate
 from math import ceil
 import json
 from django.views.decorators.csrf import csrf_exempt
-from payTm import checksum
+#from payTm import checksum
 # Create your views here.
 from django.http import HttpResponse
 MERCHANT_KEY = '';
@@ -59,9 +59,29 @@ def tracker(request):
 
     return render(request, "shop/tracker.html")
 
-
+def searchMatch(query, item):
+    ''' return true only if query matches the item'''
+    if query in item.desc.lower() or query in item.product_name.lower() or query in item.category.lower():
+        return True
+    else:
+        return False
 def search(request):
-    return render(request, 'shop/search.html')
+
+    allProds =[]
+    query = request.GET.get('search')
+    catprods = Product.objects.values('category',  'id')
+    cats =  {item['category'] for item in  catprods}
+    for cat in cats:
+        prodtemp = Product.objects.filter(category=cat)
+        prod = [item for item in prodtemp if searchMatch(query, item)]
+        n = len(prod)
+        nSlides = n//4 + ceil((n/4) - (n//4))
+        allProds.append([prod, range(1, nSlides), nSlides])
+    params={'allProds': allProds}
+    if len(allProds) == 0 or len(query) < 4:
+        params = {'msg' "pleasee make sure to enter relevent search query"}
+    return render(request, "shop/search.html", params)
+
 
 
 def Productview(request, myid):
@@ -102,7 +122,7 @@ def checkout(request):
             'CHANNEL_ID': 'WEB',
             # 'CALLBACK_URL':'http://127.0.0.1:8000/shop/handlerequest/',
         }
-        param_dict['CHECKSUMHASH'] = checksum.generaye_checksum(param_dict, MERCHANT_KEY)
+      #  param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict, MERCHANT_KEY)
         return render(request, 'shop/paytm.html', {'param_dict': param_dict})
     return render(request, 'shop/checkout.html')
 @csrf_exempt
@@ -113,7 +133,7 @@ def handlerequest(request):
     for i in form.keys():
         checksum = form[i]
 
-    verify = Checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
+    verify = checksum.verify_checksum(response_dict, MERCHANT_KEY, checksum)
     if verify:
         if response_dict['RESPCODE'] == '01':
             print('order successful')

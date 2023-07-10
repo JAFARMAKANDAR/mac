@@ -9,6 +9,17 @@
             <ul class="list-group" id="items">
 
             </ul>
+
+            <nav aria-lable="breadcrumb">
+    <ol class="breadcrumb mt-3">
+        <li class="breadcrumb-item active" aria-current="page">your Cart Total Is <b>rs.  <span id="
+        total Price"></span></b>. Enter Your details below & place your order.Thanks for using My Awesome
+            Cart</li>
+     </ol>
+     </nav>
+
+
+
         </div>
     </div>
 </div>
@@ -77,24 +88,25 @@
            if(localStorage.getItem('cart') == "null"){
         var cart = {};
         }
-
         else
         {
         cart = JSON.parse(localStorage.getItem('cart'));
-
         }
         console.log(cart);
         var sum = 0;
-        if ($isEmptyObject(cart)) {
+        var totalPrice = 0;
+        if ($.isEmptyObject(cart)) {
             //if object is empty
                mystr =  '<p>Your cart is empty,please add some item before checking out!</p>'
               $('#items').append(mystr);
         }
         else {
         for(item in cart){
-            let name = cart[item][1];
-            let qty = cart[item][0];
+            Let name = cart[item][1];
+            Let qty = cart[item][0];
+            let itemPrice = cart[item][2];
             sum = sum + qty;
+            totalprice = totalprice + qty* itemPrice
         mystr =  '<li class="list-group-item d-flex justify-content-between align-items-center">
                 A list item
                 $(name)
@@ -106,6 +118,7 @@
         }
     }
     document.getElementById('cart').innerhtml = sum;
+    document.getElementById('totalPrice').innerhtml = totalPrice;
     $('#itemsJson').val(JSON.stringify(cart));
     {% if thank %}
     aleart('Thanks for ordering with us. Your order id is {{id}}. Use to track your order using our order tracker');
