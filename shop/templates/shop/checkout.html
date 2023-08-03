@@ -3,18 +3,15 @@
 {% block title %} Checkout -My Awesome Cart {%endblock %}
 {% block body %}
 <div class="container">
-    <div class="col">
+    <div class="col my-4">
         <h2>step1 - My Awesome Cart Express Checkout -Review Your Items</h2>
         <div  class="my-4">
             <ul class="list-group" id="items">
-
             </ul>
 
             <nav aria-lable="breadcrumb">
     <ol class="breadcrumb mt-3">
-        <li class="breadcrumb-item active" aria-current="page">your Cart Total Is <b>rs.  <span id="
-        total Price"></span></b>. Enter Your details below & place your order.Thanks for using My Awesome
-            Cart</li>
+        <li class="breadcrumb-item active" aria-current="page">your Cart Total Is <b>Rs.  <span id="totalPrice"></span></b> Enter Your details below & place your order.Thanks for using My Awesome Cart!</li>
      </ol>
      </nav>
 
@@ -85,11 +82,9 @@
 
 {% block js %}
 <script>
-           if(localStorage.getItem('cart') == "null"){
+        if (localStorage.getItem('cart') == null){
         var cart = {};
-        }
-        else
-        {
+        } else {
         cart = JSON.parse(localStorage.getItem('cart'));
         }
         console.log(cart);
@@ -97,28 +92,24 @@
         var totalPrice = 0;
         if ($.isEmptyObject(cart)) {
             //if object is empty
-               mystr =  '<p>Your cart is empty,please add some item before checking out!</p>'
+               mystr =  `<p>Your cart is empty,please add some item before checking out!</p>`
               $('#items').append(mystr);
-        }
-        else {
+        } else {
         for(item in cart){
-            Let name = cart[item][1];
-            Let qty = cart[item][0];
+            let name = cart[item][1];
+            let qty = cart[item][0];
             let itemPrice = cart[item][2];
             sum = sum + qty;
-            totalprice = totalprice + qty* itemPrice
-        mystr =  '<li class="list-group-item d-flex justify-content-between align-items-center">
-                A list item
-                $(name)
-                <span class="badge bg-primary rounded-pill">${qty}</span>
-            </li>'
-
-        $('#items').append(mystr);
-
+            totalPrice = totalPrice + qty * itemPrice;
+            mystr =  `<li class="list-group-item d-flex justify-content-between align-items-center">
+                ${name}
+               <em> <span>   ${qty}</span> </em>
+                </li>`
+            $('#items').append(mystr);
         }
     }
-    document.getElementById('cart').innerhtml = sum;
-    document.getElementById('totalPrice').innerhtml = totalPrice;
+    var sum = document.getElementById('cart').innerHTML = sum;
+    var totalPrice = document.getElementById('totalPrice').innerHTML = totalPrice;
     $('#itemsJson').val(JSON.stringify(cart));
     {% if thank %}
     aleart('Thanks for ordering with us. Your order id is {{id}}. Use to track your order using our order tracker');
@@ -126,7 +117,7 @@
     document.location = "/shop";
     {% endif %}
 
-$('#amount').val($'totalPrice').html())
+    //$('#amount').val($('#totalPrice').html())
 </script>
 
 

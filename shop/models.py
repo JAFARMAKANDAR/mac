@@ -36,6 +36,13 @@ class Orders(models.Model):
     Zip_code = models.CharField(max_length=111)
     state = models.CharField(max_length=111,default="")
 
+    def __str__(self):
+        return self.item_json
+
+   # @admin.display(description='city')
+   # def get_city(self):
+   #  return [city.name for city in self.city_set.all()]
+
 
 class Orderupdate(models.Model):
     update_id = models.AutoField(primary_key=True)

@@ -1,12 +1,12 @@
 {% extends 'shop/basic.html' %}
 
-{% block title %} Contact Us -My Awesome Cart {%endblock %}
+{% block title %} Contact Us -My Awesome Cart {% endblock %}
 {% block body %}
 
 <div class="container">
     <h3>Contact Us</h3>
 
-    <form action="/shop/contact/" method="post">{% csrf_token %}
+    <form action="/shop/contact/" method="POST" >{% csrf_token %}
         <div class="form-group">
             <label for="name">Name</label>
             <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name">
@@ -21,7 +21,7 @@
         </div>
         <div class="form-group">
             <div class="form-group">
-                <label for="desc">How May We Help You ?</label>
+                <label for="desc"> How can I Help you? </label>
                 <textarea class="form-control" id="desc" name="desc" rows="3"></textarea>
             </div>
         </div>
@@ -30,3 +30,19 @@
 </div>
 
     {% endblock %}
+{% block js %}
+<script>
+    {% if thank %}
+    aleart('Thanks for ordering with us. Your order id is {{id}}. Use to track your order using our order tracker');
+
+    document.location = "/shop/contact";
+    {% endif %}
+
+</script>
+
+    {% endblock %}
+
+
+ <!--'shop.apps.ShopConfig', -->
+
+
